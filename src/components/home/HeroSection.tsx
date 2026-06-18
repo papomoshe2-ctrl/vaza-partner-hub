@@ -5,14 +5,15 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 
+// Deterministic particles — avoid SSR/client hydration mismatch
 const PARTICLES = Array.from({ length: 24 }, (_, i) => ({
   id: i,
-  left: `${Math.random() * 100}%`,
-  size: Math.random() * 3 + 1,
-  duration: Math.random() * 8 + 6,
-  delay: Math.random() * 6,
-  travel: -(Math.random() * 300 + 150),
-  maxOpacity: Math.random() * 0.4 + 0.1,
+  left: `${(i * 4.17 + 1.3) % 100}%`,
+  size: (i % 3) + 1.5,
+  duration: 6 + (i % 5) * 1.6,
+  delay: (i * 0.25) % 6,
+  travel: -(150 + (i * 11) % 150),
+  maxOpacity: 0.1 + (i % 4) * 0.08,
 }))
 
 const WORDS = ['רווחית', 'פרימיום', 'מנצחת', 'יוקרתית']

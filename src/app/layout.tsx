@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { Heebo } from 'next/font/google'
+import dynamic from 'next/dynamic'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { LenisProvider } from '@/components/layout/LenisProvider'
-import { FloatingCTA } from '@/components/layout/FloatingCTA'
+
+const LenisProvider = dynamic(() => import('@/components/layout/LenisProvider').then(m => ({ default: m.LenisProvider })), { ssr: false })
+const FloatingCTA = dynamic(() => import('@/components/layout/FloatingCTA').then(m => ({ default: m.FloatingCTA })), { ssr: false })
 
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'],

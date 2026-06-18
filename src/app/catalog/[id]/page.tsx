@@ -1,24 +1,24 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import {
-  Package, ArrowRight, TrendingUp, Check, ShoppingCart,
-  Star, Truck, Shield, ChevronDown, ChevronUp
-} from 'lucide-react'
+import { motion } from 'framer-motion'
+import { TrendingUp, Check, ShoppingCart, Truck, Shield, Star, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
 import { mockProducts } from '@/lib/mock-data'
 import { formatPrice, formatPercent, CATEGORY_LABELS, SUITABLE_FOR_LABELS } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
-import { useState } from 'react'
 import { toast } from 'sonner'
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  chocolates: '🍫', wines: '🍷', gift_sets: '🎁',
+  tea: '🫖', cookies: '🥐', valentines: '🍾',
+  desserts: '🧁', rosh_hashana: '🍯',
+}
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const product = mockProducts.find((p) => p.id === id)
+  const product = mockProducts.find(p => p.id === id)
   if (!product) notFound()
-  // product is defined past this point (notFound throws)
   const p = product!
 
   const [qty, setQty] = useState(p.moq)
@@ -28,151 +28,167 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const totalRevenue = p.price_retail * qty
   const totalProfit = p.profit_per_unit * qty
 
-  function addToQuote() {
-    toast.success(`${p.name} נוסף להצעת המחיר`)
-  }
+  const related = mockProducts.filter(x => x.id !== p.id && x.category === p.category).slice(0, 4)
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen pt-20" style={{ background: 'var(--layer-0)' }}>
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <nav className="flex items-center gap-2 text-sm text-gray-500">
-            <Link href="/" className="hover:text-gray-900">בית</Link>
-            <span>/</span>
-            <Link href="/catalog" className="hover:text-gray-900">קטלוג</Link>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">{p.name}</span>
+      <div style={{ background: 'var(--layer-2)', borderBottom: '1px solid rgba(212,175,55,0.08)' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-3">
+          <nav className="flex items-center gap-2" style={{ fontSize: '0.75rem', color: 'rgba(245,240,232,0.35)' }}>
+            <Link href="/" style={{ color: 'rgba(245,240,232,0.35)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.35)' }}>בית</Link>
+            <ArrowRight className="w-3 h-3" />
+            <Link href="/catalog" style={{ color: 'rgba(245,240,232,0.35)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.35)' }}>קטלוג</Link>
+            <ArrowRight className="w-3 h-3" />
+            <span style={{ color: '#F5F0E8' }}>{p.name}</span>
           </nav>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left: Image */}
-          <div>
-            <div className="bg-white rounded-2xl border border-gray-100 aspect-square flex items-center justify-center relative overflow-hidden">
-              <Package className="w-32 h-32 text-gray-200" />
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <div className="grid lg:grid-cols-2 gap-14">
+          {/* Left: Visual */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+            <div className="aspect-square rounded-2xl flex items-center justify-center relative overflow-hidden"
+              style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02))', border: '1px solid rgba(212,175,55,0.1)' }}>
+              <span style={{ fontSize: '8rem' }}>{CATEGORY_EMOJI[p.category] ?? '📦'}</span>
+
               <div className="absolute top-4 right-4 flex flex-col gap-2">
-                {p.is_new && <Badge className="bg-blue-500 text-white">חדש</Badge>}
-                {p.is_top_seller && <Badge className="bg-amber-500 text-white">נמכר ביותר</Badge>}
-                {p.is_featured && <Badge className="bg-purple-500 text-white">מומלץ</Badge>}
+                {p.is_new && <span className="text-xs font-bold px-3 py-1 rounded-full"
+                  style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', color: '#93c5fd' }}>חדש</span>}
+                {p.is_top_seller && <span className="text-xs font-bold px-3 py-1 rounded-full"
+                  style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}>TOP SELLER</span>}
+              </div>
+
+              <div className="absolute bottom-4 left-4 right-4 flex justify-center gap-4">
+                {[{ icon: Truck, label: '48h' }, { icon: Shield, label: 'אחריות' }, { icon: Star, label: 'פרימיום' }].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                    style={{ background: 'rgba(5,5,5,0.7)', border: '1px solid rgba(212,175,55,0.15)', backdropFilter: 'blur(8px)' }}>
+                    <Icon className="w-3 h-3" style={{ color: '#D4AF37' }} />
+                    <span style={{ fontSize: '0.65rem', color: 'rgba(245,240,232,0.6)' }}>{label}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right: Info */}
-          <div>
-            <div className="mb-2">
-              <span className="text-xs text-[#C9A84C] font-semibold uppercase tracking-wider">
-                {CATEGORY_LABELS[p.category]}
-              </span>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
+            <div style={{ fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.6)', marginBottom: '0.75rem' }}>
+              {CATEGORY_LABELS[p.category]?.toUpperCase()} · {p.sku}
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{p.name}</h1>
-            <p className="text-gray-500 mb-1 text-sm">מק&quot;ט: {p.sku}</p>
-            <p className="text-gray-500 mb-1 text-sm">מותג: {p.brand}</p>
+            <h1 className="font-black mb-2" style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', color: '#F5F0E8', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+              {p.name}
+            </h1>
+            <p style={{ fontSize: '0.8rem', color: 'rgba(245,240,232,0.35)', marginBottom: '1.5rem' }}>מותג: {p.brand}</p>
 
-            <p className="text-gray-600 mt-4 leading-relaxed text-sm">
+            <p style={{ color: 'rgba(245,240,232,0.6)', lineHeight: 1.8, fontSize: '0.9rem' }}>
               {showFullDesc ? p.description_full : p.description_short}
             </p>
-            <button
-              onClick={() => setShowFullDesc(!showFullDesc)}
-              className="text-[#C9A84C] text-xs mt-1 flex items-center gap-1"
-            >
+            <button onClick={() => setShowFullDesc(!showFullDesc)}
+              className="flex items-center gap-1 mt-2 text-xs font-semibold transition-colors duration-200"
+              style={{ color: '#D4AF37' }}>
               {showFullDesc ? <><ChevronUp className="w-3 h-3" />פחות</> : <><ChevronDown className="w-3 h-3" />קרא עוד</>}
             </button>
 
-            {/* Pricing box */}
-            <div className="bg-gray-50 rounded-2xl p-6 mt-6 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">מחיר לחנות</span>
-                <span className="font-bold text-gray-900 text-lg">{formatPrice(p.price_store)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">מחיר קמעונאי מומלץ</span>
-                <span className="font-medium text-gray-600">{formatPrice(p.price_retail)}</span>
-              </div>
-              <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                <span className="text-sm font-semibold text-green-700">רווח ליחידה</span>
+            {/* Pricing */}
+            <div className="mt-6 p-5 rounded-2xl space-y-3"
+              style={{ background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.1)' }}>
+              {[
+                { label: 'מחיר לחנות', value: formatPrice(p.price_store), color: '#D4AF37', size: '1.25rem' },
+                { label: 'מחיר קמעונאי מומלץ', value: formatPrice(p.price_retail), color: 'rgba(245,240,232,0.6)', size: '1rem' },
+              ].map(({ label, value, color, size }) => (
+                <div key={label} className="flex justify-between items-center">
+                  <span style={{ fontSize: '0.8rem', color: 'rgba(245,240,232,0.45)' }}>{label}</span>
+                  <span className="font-bold" style={{ color, fontSize: size }}>{value}</span>
+                </div>
+              ))}
+              <div className="pt-3 flex justify-between items-center" style={{ borderTop: '1px solid rgba(212,175,55,0.1)' }}>
+                <span className="font-semibold" style={{ fontSize: '0.85rem', color: '#4ade80' }}>
+                  <TrendingUp className="w-3.5 h-3.5 inline ml-1" />
+                  רווח ליחידה
+                </span>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-green-600 text-xl">{formatPrice(p.profit_per_unit)}</span>
-                  <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+                  <span className="font-black" style={{ color: '#4ade80', fontSize: '1.4rem' }}>{formatPrice(p.profit_per_unit)}</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80' }}>
                     {formatPercent(p.profit_percent)}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Qty + calculator */}
+            {/* Qty calculator */}
             <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                כמות הזמנה (מינימום {p.moq} יח&apos;)
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(245,240,232,0.45)', marginBottom: '0.75rem', letterSpacing: '0.06em' }}>
+                כמות הזמנה (מינ&#x27; {p.moq} יח&#x27;)
               </label>
-              <div className="flex items-center gap-3 mb-4">
-                <button
-                  onClick={() => setQty(Math.max(p.moq, qty - p.moq))}
-                  className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-600 hover:border-[#C9A84C] transition-colors font-bold text-lg"
-                >
+              <div className="flex items-center gap-4 mb-4">
+                <button onClick={() => setQty(Math.max(p.moq, qty - p.moq))}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg transition-all duration-200"
+                  style={{ border: '1px solid rgba(212,175,55,0.2)', color: '#D4AF37', background: 'rgba(212,175,55,0.05)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.12)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.05)' }}>
                   −
                 </button>
-                <span className="text-xl font-bold text-gray-900 w-12 text-center">{qty}</span>
-                <button
-                  onClick={() => setQty(qty + p.moq)}
-                  className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-600 hover:border-[#C9A84C] transition-colors font-bold text-lg"
-                >
+                <span className="font-black w-10 text-center" style={{ color: '#F5F0E8', fontSize: '1.25rem' }}>{qty}</span>
+                <button onClick={() => setQty(qty + p.moq)}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg transition-all duration-200"
+                  style={{ border: '1px solid rgba(212,175,55,0.2)', color: '#D4AF37', background: 'rgba(212,175,55,0.05)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.12)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.05)' }}>
                   +
                 </button>
               </div>
 
-              {/* Live calc */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="bg-white border border-gray-100 rounded-xl p-3 text-center">
-                  <div className="text-xs text-gray-400 mb-1">עלות</div>
-                  <div className="font-bold text-gray-900 text-sm">{formatPrice(totalCost)}</div>
-                </div>
-                <div className="bg-white border border-gray-100 rounded-xl p-3 text-center">
-                  <div className="text-xs text-gray-400 mb-1">הכנסות</div>
-                  <div className="font-bold text-gray-900 text-sm">{formatPrice(totalRevenue)}</div>
-                </div>
-                <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                  <div className="text-xs text-green-600 mb-1 flex items-center justify-center gap-0.5">
-                    <TrendingUp className="w-3 h-3" /> רווח
+              <div className="grid grid-cols-3 gap-3 mb-5">
+                {[
+                  { label: 'עלות', value: formatPrice(totalCost), color: '#F5F0E8' },
+                  { label: 'הכנסות', value: formatPrice(totalRevenue), color: '#F5F0E8' },
+                  { label: 'רווח', value: formatPrice(totalProfit), color: '#4ade80' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="text-center p-3 rounded-xl"
+                    style={{ background: color === '#4ade80' ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.02)', border: `1px solid ${color === '#4ade80' ? 'rgba(34,197,94,0.15)' : 'rgba(212,175,55,0.08)'}` }}>
+                    <div style={{ fontSize: '0.6rem', color: 'rgba(245,240,232,0.35)', marginBottom: '4px' }}>{label}</div>
+                    <div className="font-bold" style={{ color, fontSize: '0.9rem' }}>{value}</div>
                   </div>
-                  <div className="font-bold text-green-600 text-sm">{formatPrice(totalProfit)}</div>
-                </div>
+                ))}
               </div>
 
-              <button
-                onClick={addToQuote}
-                className="w-full h-12 rounded-xl bg-[#C9A84C] hover:bg-[#b8943e] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
-              >
-                <ShoppingCart className="w-5 h-5" />
+              <button onClick={() => toast.success(`${p.name} נוסף להצעת המחיר`)}
+                className="btn-gold w-full justify-center">
+                <ShoppingCart className="w-4 h-4" />
                 הוסף להצעת מחיר
               </button>
             </div>
 
-            {/* Meta info */}
-            <div className="grid grid-cols-2 gap-4 mt-6">
+            {/* Meta */}
+            <div className="grid grid-cols-2 gap-3 mt-5">
               {[
-                { label: 'MOQ מינימום', value: `${p.moq} יח'` },
-                { label: 'יחידות בקרטון', value: `${p.carton_qty} יח'` },
-                { label: 'מלאי זמין', value: `${p.stock_quantity} יח'` },
+                { label: 'MOQ מינ\'', value: `${p.moq} יח'` },
+                { label: 'יח\' בקרטון', value: `${p.carton_qty} יח'` },
+                { label: 'מלאי', value: `${p.stock_quantity} יח'` },
                 { label: 'קטגוריה', value: CATEGORY_LABELS[p.category] },
               ].map(({ label, value }) => (
-                <div key={label} className="bg-white rounded-xl border border-gray-100 p-3">
-                  <div className="text-xs text-gray-400 mb-0.5">{label}</div>
-                  <div className="font-semibold text-gray-900 text-sm">{value}</div>
+                <div key={label} className="p-3 rounded-xl"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(212,175,55,0.08)' }}>
+                  <div style={{ fontSize: '0.6rem', color: 'rgba(245,240,232,0.3)', marginBottom: '2px' }}>{label}</div>
+                  <div className="font-semibold" style={{ color: '#F5F0E8', fontSize: '0.85rem' }}>{value}</div>
                 </div>
               ))}
             </div>
 
-            {/* Suitable for */}
             {p.suitable_for.length > 0 && (
-              <div className="mt-6">
-                <div className="text-sm font-medium text-gray-700 mb-2">מתאים ל:</div>
+              <div className="mt-5">
+                <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'rgba(245,240,232,0.4)', marginBottom: '0.5rem', letterSpacing: '0.08em' }}>מתאים ל:</div>
                 <div className="flex flex-wrap gap-2">
-                  {p.suitable_for.map((s) => (
-                    <span key={s} className="flex items-center gap-1 text-xs bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-full">
+                  {p.suitable_for.map(s => (
+                    <span key={s} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full"
+                      style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', color: '#4ade80' }}>
                       <Check className="w-3 h-3" />
                       {SUITABLE_FOR_LABELS[s] ?? s}
                     </span>
@@ -180,45 +196,39 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
             )}
+          </motion.div>
+        </div>
 
-            {/* Trust badges */}
-            <div className="flex flex-wrap gap-4 mt-6 pt-6 border-t border-gray-100">
-              {[
-                { icon: Truck, label: 'משלוח 24-48 שעות' },
-                { icon: Shield, label: 'החזרה תוך 48 שעות' },
-                { icon: Star, label: 'מוצרים מוכנים למדף' },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-1.5 text-xs text-gray-500">
-                  <Icon className="w-4 h-4 text-[#C9A84C]" />
-                  {label}
-                </div>
+        {/* Related */}
+        {related.length > 0 && (
+          <div className="mt-20">
+            <h2 className="font-bold mb-6" style={{ color: '#F5F0E8', fontSize: '1.2rem' }}>
+              מוצרים נוספים מ<span className="gold-text">אותה קטגוריה</span>
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {related.map(r => (
+                <Link key={r.id} href={`/catalog/${r.id}`}>
+                  <div className="p-4 rounded-xl transition-all duration-200 group"
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(212,175,55,0.08)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(212,175,55,0.25)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(212,175,55,0.08)' }}>
+                    <div className="h-20 flex items-center justify-center rounded-lg mb-3"
+                      style={{ background: 'rgba(212,175,55,0.04)' }}>
+                      <span className="text-3xl transition-transform duration-200 group-hover:scale-110">
+                        {CATEGORY_EMOJI[r.category] ?? '📦'}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.3, marginBottom: '4px' }}>{r.name}</div>
+                    <div className="flex justify-between">
+                      <span style={{ fontSize: '0.72rem', color: 'rgba(245,240,232,0.4)' }}>{formatPrice(r.price_store)}</span>
+                      <span style={{ fontSize: '0.72rem', color: '#4ade80', fontWeight: 700 }}>{formatPercent(r.profit_percent)}</span>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Related products */}
-        <div className="mt-16">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">מוצרים נוספים</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {mockProducts.filter((p) => p.id !== p.id).slice(0, 4).map((p) => (
-              <Link
-                key={p.id}
-                href={`/catalog/${p.id}`}
-                className="bg-white rounded-xl border border-gray-100 hover:border-[#C9A84C]/40 hover:shadow-sm transition-all p-4"
-              >
-                <div className="bg-gray-50 rounded-lg h-24 flex items-center justify-center mb-3">
-                  <Package className="w-10 h-10 text-gray-200" />
-                </div>
-                <div className="text-xs font-semibold text-gray-900 mb-1 line-clamp-2">{p.name}</div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">{formatPrice(p.price_store)}</span>
-                  <span className="text-xs text-green-600 font-semibold">{formatPercent(p.profit_percent)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )
