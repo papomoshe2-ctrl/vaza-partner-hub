@@ -1,13 +1,10 @@
 import type { Metadata } from 'next'
 import { Heebo } from 'next/font/google'
-import dynamic from 'next/dynamic'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-
-const LenisProvider = dynamic(() => import('@/components/layout/LenisProvider').then(m => ({ default: m.LenisProvider })), { ssr: false })
-const FloatingCTA = dynamic(() => import('@/components/layout/FloatingCTA').then(m => ({ default: m.FloatingCTA })), { ssr: false })
+import { ClientProviders } from '@/components/layout/ClientProviders'
 
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'],
@@ -26,13 +23,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} h-full`}>
       <body className="min-h-full flex flex-col" style={{ fontFamily: 'var(--font-heebo), system-ui, sans-serif' }}>
-        <LenisProvider>
+        <ClientProviders>
           <Navbar />
           <main className="flex-1 relative z-10">{children}</main>
           <Footer />
-          <FloatingCTA />
           <Toaster position="top-center" theme="dark" />
-        </LenisProvider>
+        </ClientProviders>
       </body>
     </html>
   )
