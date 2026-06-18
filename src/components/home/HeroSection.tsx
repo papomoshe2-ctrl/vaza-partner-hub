@@ -1,115 +1,249 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, TrendingUp, Star, Zap } from 'lucide-react'
-import { buttonVariants } from '@/components/ui/button'
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, ChevronDown } from 'lucide-react'
+
+const PARTICLES = Array.from({ length: 24 }, (_, i) => ({
+  id: i,
+  left: `${Math.random() * 100}%`,
+  size: Math.random() * 3 + 1,
+  duration: Math.random() * 8 + 6,
+  delay: Math.random() * 6,
+  travel: -(Math.random() * 300 + 150),
+  maxOpacity: Math.random() * 0.4 + 0.1,
+}))
+
+const WORDS = ['רווחית', 'פרימיום', 'מנצחת', 'יוקרתית']
 
 export function HeroSection() {
+  const [wordIndex, setWordIndex] = useState(0)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const interval = setInterval(() => setWordIndex((i) => (i + 1) % WORDS.length), 2500)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 30,
+        y: (e.clientY / window.innerHeight - 0.5) * 30,
+      })
+    }
+    window.addEventListener('mousemove', onMove)
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
+
   return (
-    <section className="relative min-h-screen bg-gray-950 flex items-center overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-            backgroundSize: '40px 40px',
-          }}
-        />
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: 'var(--layer-0)' }}>
+
+      {/* Dynamic glow following mouse */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out"
+        style={{
+          transform: `translate(${mousePos.x}px, ${mousePos.y}px)`,
+          background: `radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.07) 0%, transparent 70%)`,
+        }}
+      />
+
+      {/* Static ambient glows */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10"
+          style={{ background: 'radial-gradient(circle, #D4AF37 0%, transparent 70%)' }} />
+        <div className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] rounded-full blur-[100px] opacity-6"
+          style={{ background: 'radial-gradient(circle, #B8963E 0%, transparent 70%)' }} />
       </div>
 
-      {/* Gold gradient orb */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#C9A84C]/10 blur-[120px] pointer-events-none" />
+      {/* Luxury grid lines */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.025]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(212,175,55,0.4) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(212,175,55,0.4) 1px, transparent 1px)
+          `,
+          backgroundSize: '80px 80px',
+        }}
+      />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
-        <div className="max-w-3xl">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-full px-4 py-1.5 mb-8">
-            <Star className="w-3.5 h-3.5 text-[#C9A84C] fill-[#C9A84C]" />
-            <span className="text-[#C9A84C] text-xs font-medium tracking-wide">
-              מערכת B2B פרימיום לחנויות פרחים ומתנות
+      {/* Gold particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {PARTICLES.map((p) => (
+          <span
+            key={p.id}
+            className="particle"
+            style={{
+              left: p.left,
+              bottom: '-10px',
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              '--duration': `${p.duration}s`,
+              '--delay': `${p.delay}s`,
+              '--travel': `${p.travel}px`,
+              '--max-opacity': p.maxOpacity,
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full py-32">
+        <div className="max-w-4xl">
+
+          {/* Label */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <span className="section-label">
+              מערכת B2B פרימיום לישראל
             </span>
-          </div>
+          </motion.div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-            הפוך כל חנות פרחים
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="font-black leading-[0.95] mb-6"
+            style={{ fontSize: 'clamp(52px, 8vw, 96px)', color: '#F5F0E8', letterSpacing: '-0.02em' }}
+          >
+            הפוך כל חנות
             <br />
-            <span className="text-[#C9A84C]">לחנות מתנות רווחית יותר</span>
-          </h1>
+            פרחים לחנות
+            <br />
+            <span
+              className="gold-text-shimmer"
+              key={wordIndex}
+            >
+              {WORDS[wordIndex]} יותר
+            </span>
+          </motion.h1>
 
-          <p className="text-lg text-gray-400 leading-relaxed mb-10 max-w-xl">
-            גישה למאות מוצרים נבחרים — שוקולדים, יינות, מארזים, קינוחים ועוד —
-            שיכולים להגדיל את סל הקנייה מ-150 ₪ ל-450 ₪.
-          </p>
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="text-lg leading-relaxed mb-10 max-w-2xl"
+            style={{ color: 'rgba(245,240,232,0.5)', fontWeight: 300 }}
+          >
+            גישה למאות מוצרי פרימיום — שוקולדים, יינות, מארזים יוקרתיים ועוד —
+            שמגדילים את סל הקנייה מ-150₪ ל-450₪ ומעלה.
+          </motion.p>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-8 mb-10">
+          {/* Stats row */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="flex flex-wrap gap-10 mb-12"
+          >
             {[
-              { icon: TrendingUp, value: '200%+', label: 'גידול ממוצע בסל' },
-              { icon: Zap, value: '48 שעות', label: 'אספקה מהירה' },
-              { icon: Star, value: '500+', label: 'מוצרים בקטלוג' },
-            ].map(({ icon: Icon, value, label }) => (
-              <div key={label} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#C9A84C]/10 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-[#C9A84C]" />
-                </div>
-                <div>
-                  <div className="text-white font-bold text-lg leading-none">{value}</div>
-                  <div className="text-gray-500 text-xs mt-0.5">{label}</div>
-                </div>
+              { value: '200%+', label: 'גידול ממוצע בסל הקנייה' },
+              { value: '500+', label: 'מוצרי פרימיום בקטלוג' },
+              { value: '48h', label: 'אספקה מובטחת לכל הארץ' },
+            ].map(({ value, label }) => (
+              <div key={label} className="flex flex-col gap-1">
+                <span
+                  className="font-black"
+                  style={{ fontSize: '2rem', lineHeight: 1, color: '#D4AF37' }}
+                >
+                  {value}
+                </span>
+                <span style={{ fontSize: '0.72rem', color: 'rgba(245,240,232,0.4)', letterSpacing: '0.08em' }}>
+                  {label}
+                </span>
               </div>
             ))}
-          </div>
+          </motion.div>
 
-          {/* CTA buttons */}
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/catalog"
-              className={buttonVariants({ size: 'lg', className: 'bg-[#C9A84C] hover:bg-[#b8943e] text-white font-semibold px-8 h-12' })}
-            >
-              <ArrowLeft className="w-4 h-4 ml-2" />
-              צפייה בקטלוג
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            className="flex flex-wrap gap-4"
+          >
+            <Link href="/catalog" className="btn-gold text-sm">
+              צפה בקטלוג המלא
+              <ArrowLeft className="w-4 h-4" />
             </Link>
-            <Link
-              href="/package-builder"
-              className={buttonVariants({ size: 'lg', variant: 'outline', className: 'border-white/20 text-white hover:bg-white/10 bg-transparent h-12 px-8' })}
-            >
-              בניית חבילת מוצרים
+            <Link href="/package-builder" className="btn-ghost-gold text-sm">
+              בנה חבילת מוצרים
             </Link>
-            <Link
-              href="/contact"
-              className={buttonVariants({ size: 'lg', variant: 'ghost', className: 'text-gray-400 hover:text-white hover:bg-white/5 h-12 px-8' })}
-            >
-              יצירת קשר
-            </Link>
-          </div>
+          </motion.div>
+        </div>
+
+        {/* Floating product preview cards */}
+        <div className="hidden xl:block absolute left-8 top-1/2 -translate-y-1/2">
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-col gap-3"
+          >
+            {[
+              { name: 'שוקולד בלגי פרימיום', profit: '49%', price: '₪28', cat: 'שוקולדים' },
+              { name: 'יין אדום בוטיק', profit: '46%', price: '₪65', cat: 'יינות' },
+              { name: 'מארז מתנה יוקרה', profit: '47%', price: '₪85', cat: 'מארזים' },
+            ].map((card, i) => (
+              <motion.div
+                key={card.name}
+                className="luxury-card px-5 py-4 w-56"
+                style={{ animationDelay: `${i * 0.5}s` }}
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.7 }}
+              >
+                <div style={{ fontSize: '0.65rem', color: 'rgba(212,175,55,0.5)', letterSpacing: '0.15em', marginBottom: '0.35rem' }}>
+                  {card.cat.toUpperCase()}
+                </div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F5F0E8', marginBottom: '0.6rem', lineHeight: 1.3 }}>
+                  {card.name}
+                </div>
+                <div className="flex justify-between items-center">
+                  <span style={{ fontSize: '1rem', fontWeight: 800, color: '#D4AF37' }}>{card.price}</span>
+                  <span style={{
+                    fontSize: '0.7rem', fontWeight: 700,
+                    background: 'rgba(34,197,94,0.1)',
+                    border: '1px solid rgba(34,197,94,0.2)',
+                    color: '#4ade80',
+                    padding: '2px 8px', borderRadius: '20px'
+                  }}>
+                    רווח {card.profit}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
 
-      {/* Floating product cards */}
-      <div className="hidden xl:flex absolute left-16 top-1/2 -translate-y-1/2 flex-col gap-4">
-        {[
-          { name: 'שוקולד בלגי פרימיום', price: '₪28', profit: '45%' },
-          { name: 'יין אדום בוטיק', price: '₪65', profit: '38%' },
-          { name: 'מארז מתנה יוקרה', price: '₪120', profit: '52%' },
-        ].map((card) => (
-          <div
-            key={card.name}
-            className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-4 w-52"
-          >
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-white text-xs font-medium leading-snug">{card.name}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[#C9A84C] text-sm font-bold">{card.price}</span>
-              <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded-full">
-                רווח {card.profit}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+      >
+        <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(245,240,232,0.25)' }}>
+          SCROLL
+        </span>
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <ChevronDown className="w-4 h-4" style={{ color: 'rgba(212,175,55,0.4)' }} />
+        </motion.div>
+      </motion.div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 inset-x-0 h-32 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, var(--layer-0), transparent)' }} />
     </section>
   )
 }

@@ -1,164 +1,156 @@
 'use client'
 
 import { useState } from 'react'
-import { Phone, Mail, MessageCircle, Send } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { motion } from 'framer-motion'
+import { MessageCircle, Phone, Send } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function ContactSection() {
+  const [form, setForm] = useState({ name: '', business: '', phone: '', city: '' })
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({
-    business_name: '',
-    contact_name: '',
-    phone: '',
-    email: '',
-    city: '',
-  })
 
-  function handleChange(field: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [field]: e.target.value })
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    toast.success('הפרטים נשלחו! ניצור איתך קשר תוך 24 שעות.')
-    setForm({ business_name: '', contact_name: '', phone: '', email: '', city: '' })
+    await new Promise((r) => setTimeout(r, 1200))
     setLoading(false)
+    toast.success('הבקשה נשלחה! ניצור איתך קשר תוך 24 שעות.')
+    setForm({ name: '', business: '', phone: '', city: '' })
   }
 
+  const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }))
+
   return (
-    <section className="bg-gray-950 py-20 lg:py-28">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: info */}
-          <div>
-            <p className="text-[#C9A84C] text-sm font-semibold tracking-widest uppercase mb-3">
-              צור קשר
-            </p>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-              רוצה להצטרף?
-              <br />
-              דבר איתנו עכשיו
+    <section className="relative py-24 lg:py-36" style={{ background: 'var(--layer-1)' }}>
+      <div className="gold-line absolute top-0 inset-x-0" />
+
+      {/* Ambient glow */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 50% 60% at 50% 100%, rgba(212,175,55,0.05), transparent 70%)' }} />
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+          {/* Left: Copy */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="flex mb-6">
+              <span className="section-label">הצטרפות לרשת</span>
+            </div>
+            <h2
+              className="font-black mb-6"
+              style={{ fontSize: 'clamp(30px, 5vw, 52px)', color: '#F5F0E8', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+            >
+              מוכן להתחיל<br />
+              <span className="gold-text">להרוויח יותר?</span>
             </h2>
-            <p className="text-gray-400 leading-relaxed mb-10">
-              מלא את הטופס ונחזור אליך תוך 24 שעות עם הצעה מותאמת לחנות שלך.
-              ללא עמלות נסתרות, ללא התחייבויות.
+            <p className="mb-10" style={{ color: 'rgba(245,240,232,0.45)', lineHeight: 1.8, maxWidth: 400 }}>
+              שלח לנו פרטים בסיסיים ומנהל הלקוחות שלנו יחזור אליך תוך 24 שעות עם מחירון מותאם אישית.
             </p>
 
             <div className="space-y-4">
               <a
                 href="https://wa.me/972500000000"
-                className="flex items-center gap-4 group"
+                className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
+                style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.1)' }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.06)' }}
               >
-                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-                  <MessageCircle className="w-5 h-5 text-green-400" />
-                </div>
+                <MessageCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#4ade80' }} />
                 <div>
-                  <div className="text-white font-medium text-sm">וואטסאפ</div>
-                  <div className="text-gray-500 text-xs">050-000-0000</div>
+                  <div style={{ fontWeight: 700, color: '#F5F0E8', fontSize: '0.9rem' }}>וואטסאפ ישיר</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(245,240,232,0.4)' }}>050-000-0000</div>
                 </div>
               </a>
-              <a href="tel:050-000-0000" className="flex items-center gap-4 group">
-                <div className="w-12 h-12 rounded-full bg-[#C9A84C]/10 flex items-center justify-center group-hover:bg-[#C9A84C]/20 transition-colors">
-                  <Phone className="w-5 h-5 text-[#C9A84C]" />
-                </div>
+              <a
+                href="tel:+97250000000"
+                className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
+                style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.1)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.09)' }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.05)' }}
+              >
+                <Phone className="w-5 h-5 flex-shrink-0" style={{ color: '#D4AF37' }} />
                 <div>
-                  <div className="text-white font-medium text-sm">טלפון</div>
-                  <div className="text-gray-500 text-xs">050-000-0000</div>
-                </div>
-              </a>
-              <a href="mailto:info@vaza.co.il" className="flex items-center gap-4 group">
-                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                  <Mail className="w-5 h-5 text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-white font-medium text-sm">אימייל</div>
-                  <div className="text-gray-500 text-xs">info@vaza.co.il</div>
+                  <div style={{ fontWeight: 700, color: '#F5F0E8', fontSize: '0.9rem' }}>שיחה טלפונית</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(245,240,232,0.4)' }}>ראשון–חמישי 9:00–18:00</div>
                 </div>
               </a>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right: form */}
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-5"
+          {/* Right: Form */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <Label className="text-gray-300 text-sm mb-1.5 block">שם העסק *</Label>
-                <Input
-                  required
-                  value={form.business_name}
-                  onChange={handleChange('business_name')}
-                  placeholder="פרחי שרון"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-[#C9A84C]"
-                />
-              </div>
-              <div>
-                <Label className="text-gray-300 text-sm mb-1.5 block">איש קשר *</Label>
-                <Input
-                  required
-                  value={form.contact_name}
-                  onChange={handleChange('contact_name')}
-                  placeholder="שם מלא"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-[#C9A84C]"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <Label className="text-gray-300 text-sm mb-1.5 block">טלפון *</Label>
-                <Input
-                  required
-                  type="tel"
-                  value={form.phone}
-                  onChange={handleChange('phone')}
-                  placeholder="050-0000000"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-[#C9A84C]"
-                  dir="ltr"
-                />
-              </div>
-              <div>
-                <Label className="text-gray-300 text-sm mb-1.5 block">אימייל</Label>
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange('email')}
-                  placeholder="email@example.com"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-[#C9A84C]"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-            <div>
-              <Label className="text-gray-300 text-sm mb-1.5 block">עיר</Label>
-              <Input
-                value={form.city}
-                onChange={handleChange('city')}
-                placeholder="תל אביב"
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-[#C9A84C]"
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#C9A84C] hover:bg-[#b8943e] text-white font-semibold h-12 mt-2"
-            >
-              {loading ? 'שולח...' : (
-                <>
-                  שלח פרטים
-                  <Send className="w-4 h-4 mr-2" />
-                </>
-              )}
-            </Button>
-          </form>
+            <form onSubmit={handleSubmit} className="luxury-card p-8 space-y-5">
+              {[
+                { field: 'name' as const, label: 'שם מלא', placeholder: 'ישראל ישראלי' },
+                { field: 'business' as const, label: 'שם העסק', placeholder: 'פרחי ישראל' },
+                { field: 'phone' as const, label: 'טלפון', placeholder: '050-000-0000' },
+                { field: 'city' as const, label: 'עיר', placeholder: 'תל אביב' },
+              ].map(({ field, label, placeholder }) => (
+                <div key={field}>
+                  <label
+                    htmlFor={field}
+                    style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(245,240,232,0.5)', marginBottom: '0.5rem', letterSpacing: '0.05em' }}
+                  >
+                    {label}
+                  </label>
+                  <input
+                    id={field}
+                    type={field === 'phone' ? 'tel' : 'text'}
+                    value={form[field]}
+                    onChange={set(field)}
+                    placeholder={placeholder}
+                    required
+                    style={{
+                      width: '100%',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(212,175,55,0.12)',
+                      borderRadius: '10px',
+                      padding: '12px 14px',
+                      fontSize: '0.9rem',
+                      color: '#F5F0E8',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)' }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.12)' }}
+                  />
+                </div>
+              ))}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gold w-full justify-center text-sm mt-2"
+                style={{ opacity: loading ? 0.7 : 1 }}
+              >
+                {loading ? 'שולח...' : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    שלח בקשה להצטרפות
+                  </>
+                )}
+              </button>
+
+              <p style={{ fontSize: '0.7rem', textAlign: 'center', color: 'rgba(245,240,232,0.25)', marginTop: '0.5rem' }}>
+                אנו מתחייבים לחזור אליך תוך 24 שעות. ללא התחייבות.
+              </p>
+            </form>
+          </motion.div>
         </div>
       </div>
+
+      <div className="gold-line absolute bottom-0 inset-x-0" />
     </section>
   )
 }
