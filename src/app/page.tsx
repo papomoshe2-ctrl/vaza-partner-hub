@@ -1,23 +1,25 @@
-import { HeroSection } from '@/components/home/HeroSection'
-import { BenefitsSection } from '@/components/home/BenefitsSection'
-import { CategoriesSection } from '@/components/home/CategoriesSection'
+import { EditorialHero } from '@/components/home/EditorialHero'
+import { BusinessProblemSection } from '@/components/home/BusinessProblemSection'
+import { BasketValueSection } from '@/components/home/BasketValueSection'
+import { CollectionsShowcase } from '@/components/home/CollectionsShowcase'
 import { ProfitCalculator } from '@/components/home/ProfitCalculator'
-import { PackagesSection } from '@/components/home/PackagesSection'
-import { BrandSection } from '@/components/home/BrandSection'
-import { SuccessStoriesSection } from '@/components/home/SuccessStoriesSection'
-import { ContactSection } from '@/components/home/ContactSection'
+import { StarterPackages } from '@/components/home/StarterPackages'
+import { ExistingPartnersSection } from '@/components/home/ExistingPartnersSection'
+import { NewStoresSection } from '@/components/home/NewStoresSection'
+import { ConciergeContactForm } from '@/components/home/ConciergeContactForm'
 
 export default function HomePage() {
   return (
     <>
-      <HeroSection />
-      <BenefitsSection />
-      <CategoriesSection />
+      <EditorialHero />
+      <BusinessProblemSection />
+      <BasketValueSection />
+      <CollectionsShowcase />
       <ProfitCalculator />
-      <PackagesSection />
-      <BrandSection />
-      <SuccessStoriesSection />
-      <ContactSection />
+      <StarterPackages />
+      <ExistingPartnersSection />
+      <NewStoresSection />
+      <ConciergeContactForm />
     </>
   )
 }

@@ -1,56 +1,49 @@
 'use client'
 
 import Link from 'next/link'
-import { Phone, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="relative" style={{ background: 'var(--layer-2)', borderTop: '1px solid rgba(212,175,55,0.08)' }}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer style={{ background: 'var(--ink-1)', borderTop: '1px solid var(--border-subtle)' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 2rem 40px' }}>
+
+        {/* Top row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '3rem', marginBottom: '64px' }}
+          className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+
           {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-5">
-              <div
-                className="w-8 h-8 rounded flex items-center justify-center font-black text-sm"
-                style={{ background: 'linear-gradient(135deg, #B8963E, #D4AF37, #F4D06F)', color: '#050505' }}
-              >
+          <div>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', marginBottom: '1.25rem' }}>
+              <div style={{ width: '28px', height: '28px', background: 'var(--bronze)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.8rem', color: '#050505' }}>
                 V
               </div>
-              <div className="flex flex-col leading-none">
-                <span className="font-black text-base tracking-widest uppercase" style={{ color: '#F5F0E8', letterSpacing: '0.15em' }}>
-                  VAZA
-                </span>
-                <span className="text-[9px] font-medium tracking-[0.3em] uppercase" style={{ color: 'rgba(212,175,55,0.6)' }}>
-                  Partner Hub
-                </span>
-              </div>
+              <span style={{ fontWeight: 900, fontSize: '0.85rem', letterSpacing: '0.18em', color: 'var(--cream)', textTransform: 'uppercase' }}>
+                VAZA
+              </span>
             </Link>
-            <p style={{ fontSize: '0.8rem', color: 'rgba(245,240,232,0.35)', lineHeight: 1.8 }}>
-              מערכת B2B פרימיום לחנויות פרחים, מתנות ואירוח בישראל.
+            <p style={{ fontSize: '0.78rem', color: 'var(--cream-muted)', lineHeight: 1.8, maxWidth: '22ch' }}>
+              מוצרי פרימיום לחנויות פרחים ומתנות בישראל.
             </p>
           </div>
 
           {/* Nav */}
           <div>
-            <h4 style={{ fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(245,240,232,0.3)', marginBottom: '1.25rem' }}>
-              ניווט
-            </h4>
-            <ul className="space-y-3">
+            <div className="editorial-label" style={{ marginBottom: '1.25rem' }}>ניווט</div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {[
                 { href: '/catalog', label: 'קטלוג מוצרים' },
                 { href: '/package-builder', label: 'בנה חבילה' },
+                { href: '/top-sellers', label: 'Top Sellers' },
                 { href: '/about', label: 'אודות' },
-                { href: '/contact', label: 'צור קשר' },
-              ].map((link) => (
-                <li key={link.href}>
+              ].map((l) => (
+                <li key={l.href}>
                   <Link
-                    href={link.href}
-                    style={{ fontSize: '0.82rem', color: 'rgba(245,240,232,0.4)', transition: 'color 0.2s' }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.4)' }}
+                    href={l.href}
+                    style={{ fontSize: '0.8rem', color: 'var(--cream-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--bronze)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-muted)' }}
                   >
-                    {link.label}
+                    {l.label}
                   </Link>
                 </li>
               ))}
@@ -59,17 +52,15 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 style={{ fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(245,240,232,0.3)', marginBottom: '1.25rem' }}>
-              קטגוריות
-            </h4>
-            <ul className="space-y-3">
-              {['שוקולדים', 'יינות', 'מארזי מתנה', 'תה פרמיום', 'שמפניה'].map((cat) => (
+            <div className="editorial-label" style={{ marginBottom: '1.25rem' }}>קטגוריות</div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {['שוקולדים', 'יינות', 'מארזי מתנה', 'תה פרימיום', 'שמפניה'].map((cat) => (
                 <li key={cat}>
                   <Link
                     href="/catalog"
-                    style={{ fontSize: '0.82rem', color: 'rgba(245,240,232,0.4)', transition: 'color 0.2s' }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.4)' }}
+                    style={{ fontSize: '0.8rem', color: 'var(--cream-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--bronze)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-muted)' }}
                   >
                     {cat}
                   </Link>
@@ -80,37 +71,51 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 style={{ fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(245,240,232,0.3)', marginBottom: '1.25rem' }}>
-              יצירת קשר
-            </h4>
-            <ul className="space-y-4">
-              <li className="flex items-center gap-3">
-                <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                <span style={{ fontSize: '0.82rem', color: 'rgba(245,240,232,0.4)' }}>050-000-0000</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'rgba(212,175,55,0.5)' }} />
-                <span style={{ fontSize: '0.82rem', color: 'rgba(245,240,232,0.4)' }}>info@vaza.co.il</span>
-              </li>
-            </ul>
+            <div className="editorial-label" style={{ marginBottom: '1.25rem' }}>קשר</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <a
+                href="https://wa.me/972501234567"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '0.8rem', color: 'var(--cream-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#25D366' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-muted)' }}
+              >
+                WhatsApp
+              </a>
+              <a
+                href="mailto:info@vaza.co.il"
+                style={{ fontSize: '0.8rem', color: 'var(--cream-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--bronze)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-muted)' }}
+              >
+                info@vaza.co.il
+              </a>
+              <Link
+                href="/contact"
+                style={{ fontSize: '0.8rem', color: 'var(--cream-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--bronze)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-muted)' }}
+              >
+                צור קשר
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div
-          className="mt-12 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3"
-          style={{ borderTop: '1px solid rgba(212,175,55,0.06)' }}
-        >
-          <p style={{ fontSize: '0.7rem', color: 'rgba(245,240,232,0.2)' }}>
-            © 2025 VAZA Partner Hub. כל הזכויות שמורות.
+        {/* Bottom bar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '2rem', borderTop: '1px solid var(--border-subtle)', flexWrap: 'wrap', gap: '1rem' }}>
+          <p style={{ fontSize: '0.68rem', color: 'var(--cream-ghost)', letterSpacing: '0.06em' }}>
+            © 2025 VAZA. כל הזכויות שמורות.
           </p>
-          <div className="flex items-center gap-5">
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
             {[{ href: '/privacy', label: 'פרטיות' }, { href: '/terms', label: 'תנאי שימוש' }].map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                style={{ fontSize: '0.7rem', color: 'rgba(245,240,232,0.2)', transition: 'color 0.2s' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(212,175,55,0.5)' }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.2)' }}
+                style={{ fontSize: '0.68rem', color: 'var(--cream-ghost)', textDecoration: 'none', transition: 'color 0.2s', letterSpacing: '0.06em' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--bronze-dim)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-ghost)' }}
               >
                 {l.label}
               </Link>

@@ -2,24 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp } from 'lucide-react'
 
-function useCountUp(target: number, duration = 800) {
+function useCountUp(target: number, duration = 700) {
   const [value, setValue] = useState(0)
   const raf = useRef<number | null>(null)
 
   useEffect(() => {
     const start = performance.now()
-    const from = 0
-
     const tick = (now: number) => {
-      const elapsed = now - start
-      const progress = Math.min(elapsed / duration, 1)
+      const progress = Math.min((now - start) / duration, 1)
       const ease = 1 - Math.pow(1 - progress, 3)
-      setValue(Math.round(from + (target - from) * ease))
+      setValue(Math.round(target * ease))
       if (progress < 1) raf.current = requestAnimationFrame(tick)
     }
-
     raf.current = requestAnimationFrame(tick)
     return () => { if (raf.current) cancelAnimationFrame(raf.current) }
   }, [target, duration])
@@ -32,154 +27,171 @@ export function ProfitCalculator() {
   const [avgPrice, setAvgPrice] = useState(65)
   const [margin, setMargin] = useState(42)
 
-  const monthlyRevenue = qty * avgPrice * 30
-  const monthlyProfit = Math.round(monthlyRevenue * (margin / 100))
-  const annualProfit = monthlyProfit * 12
+  const monthly = Math.round(qty * avgPrice * 30 * (margin / 100))
+  const annual = monthly * 12
 
-  const displayMonthly = useCountUp(monthlyProfit)
-  const displayAnnual = useCountUp(annualProfit)
+  const displayMonthly = useCountUp(monthly)
+  const displayAnnual = useCountUp(annual)
 
   return (
-    <section className="relative py-24 lg:py-36" style={{ background: 'var(--layer-2)' }}>
-      <div className="gold-line absolute top-0 inset-x-0" />
+    <section style={{ background: 'var(--ink-0)', padding: '120px 0', borderTop: '1px solid var(--border-subtle)' }}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
 
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.04) 0%, transparent 70%)' }} />
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <motion.div
-          className="text-center mb-14"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex justify-center mb-5">
-            <span className="section-label">מחשבון רווחיות</span>
+        {/* Header */}
+        <div className="grid lg:grid-cols-12 gap-8 mb-16 items-end">
+          <div className="lg:col-span-6">
+            <motion.span
+              className="editorial-label"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              מחשבון רווחיות
+            </motion.span>
+            <motion.h2
+              className="display-md mt-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+            >
+              כמה אתה יכול<br />
+              <span style={{ color: 'var(--bronze)' }}>להרוויח?</span>
+            </motion.h2>
           </div>
-          <h2
-            className="font-black mb-4"
-            style={{ fontSize: 'clamp(30px, 5vw, 52px)', color: '#F5F0E8', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+          <motion.p
+            className="lg:col-span-6 editorial-body"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            style={{ fontSize: '0.88rem' }}
           >
-            כמה אתה יכול<br />
-            <span className="gold-text">להרוויח עם VAZA?</span>
-          </h2>
-          <p style={{ color: 'rgba(245,240,232,0.4)', maxWidth: 420, margin: '0 auto', lineHeight: 1.8 }}>
-            הזז את המחוונים וראה את הרווח הפוטנציאלי שלך בזמן אמת.
-          </p>
-        </motion.div>
+            הזז את המחוונים לפי המציאות של החנות שלך — ותראה את הרווח הנוסף שמחכה לך.
+          </motion.p>
+        </div>
 
         <motion.div
-          className="grid lg:grid-cols-2 gap-8 items-center"
-          initial={{ opacity: 0, y: 30 }}
+          className="grid lg:grid-cols-2 gap-px"
+          style={{ background: 'var(--border-subtle)' }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.1 }}
+          transition={{ duration: 0.8 }}
         >
           {/* Controls */}
-          <div className="luxury-card p-8 space-y-8">
-            {/* Qty */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F5F0E8' }}>
-                  מכירות ביום
-                </label>
-                <span className="font-black" style={{ color: '#D4AF37', fontSize: '1.2rem' }}>{qty}</span>
-              </div>
-              <input
-                type="range" min={5} max={200} value={qty}
-                onChange={(e) => setQty(Number(e.target.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between mt-1" style={{ fontSize: '0.65rem', color: 'rgba(245,240,232,0.25)' }}>
-                <span>5</span><span>200</span>
-              </div>
-            </div>
-
-            {/* Avg price */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F5F0E8' }}>
-                  מחיר מכירה ממוצע
-                </label>
-                <span className="font-black" style={{ color: '#D4AF37', fontSize: '1.2rem' }}>₪{avgPrice}</span>
-              </div>
-              <input
-                type="range" min={20} max={250} value={avgPrice}
-                onChange={(e) => setAvgPrice(Number(e.target.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between mt-1" style={{ fontSize: '0.65rem', color: 'rgba(245,240,232,0.25)' }}>
-                <span>₪20</span><span>₪250</span>
-              </div>
-            </div>
-
-            {/* Margin */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F5F0E8' }}>
-                  מרווח רווח
-                </label>
-                <span className="font-black" style={{ color: '#D4AF37', fontSize: '1.2rem' }}>{margin}%</span>
-              </div>
-              <input
-                type="range" min={20} max={65} value={margin}
-                onChange={(e) => setMargin(Number(e.target.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between mt-1" style={{ fontSize: '0.65rem', color: 'rgba(245,240,232,0.25)' }}>
-                <span>20%</span><span>65%</span>
-              </div>
-            </div>
+          <div style={{ background: 'var(--ink-2)', padding: '48px 40px', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+            <Slider
+              label="מכירות ביום"
+              value={qty}
+              min={5}
+              max={200}
+              onChange={setQty}
+              display={String(qty)}
+            />
+            <Slider
+              label="מחיר מכירה ממוצע"
+              value={avgPrice}
+              min={20}
+              max={250}
+              onChange={setAvgPrice}
+              display={`₪${avgPrice}`}
+            />
+            <Slider
+              label="מרווח רווח"
+              value={margin}
+              min={20}
+              max={65}
+              onChange={setMargin}
+              display={`${margin}%`}
+            />
           </div>
 
           {/* Results */}
-          <div className="space-y-5">
-            <div
-              className="luxury-card p-8 text-center"
-              style={{ border: '1px solid rgba(212,175,55,0.25)' }}
-            >
-              <div style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.6)', marginBottom: '0.75rem' }}>
-                רווח חודשי משוער
-              </div>
+          <div style={{ background: 'var(--ink-3)', padding: '48px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem' }}>
+            <div>
+              <div className="editorial-label" style={{ color: 'var(--cream-muted)', marginBottom: '1rem' }}>רווח חודשי משוער</div>
               <div
-                className="font-black tabular-nums"
-                style={{ fontSize: 'clamp(36px, 5vw, 56px)', color: '#D4AF37', lineHeight: 1 }}
+                className="tabular-nums"
+                style={{
+                  fontSize: 'clamp(40px, 6vw, 72px)',
+                  fontWeight: 900,
+                  color: 'var(--bronze)',
+                  lineHeight: 1,
+                  letterSpacing: '-0.02em',
+                }}
               >
                 ₪{displayMonthly.toLocaleString('he-IL')}
               </div>
-              <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'rgba(245,240,232,0.3)' }}>
-                על בסיס {qty} מכירות ביום
-              </div>
+              <p style={{ fontSize: '0.72rem', color: 'var(--cream-muted)', marginTop: '0.5rem' }}>
+                על בסיס {qty} מכירות ביום × 30 יום
+              </p>
             </div>
 
-            <div className="luxury-card p-8 text-center">
-              <div style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.5)', marginBottom: '0.75rem' }}>
-                רווח שנתי פוטנציאלי
-              </div>
+            <div style={{ height: '1px', background: 'var(--border-subtle)' }} />
+
+            <div>
+              <div className="editorial-label" style={{ color: 'var(--cream-muted)', marginBottom: '0.75rem' }}>רווח שנתי פוטנציאלי</div>
               <div
-                className="font-black tabular-nums"
-                style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#F5F0E8', lineHeight: 1 }}
+                className="tabular-nums"
+                style={{
+                  fontSize: 'clamp(28px, 4vw, 48px)',
+                  fontWeight: 800,
+                  color: 'var(--cream)',
+                  lineHeight: 1,
+                  letterSpacing: '-0.02em',
+                }}
               >
                 ₪{displayAnnual.toLocaleString('he-IL')}
               </div>
             </div>
 
-            <div
-              className="flex items-center gap-3 p-4 rounded-xl"
-              style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}
-            >
-              <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: '#4ade80' }} />
-              <p style={{ fontSize: '0.78rem', color: 'rgba(74,222,128,0.85)', lineHeight: 1.6 }}>
-                חברי VAZA מדווחים על גידול ממוצע של <strong>200%</strong> בסל הקנייה תוך 3 חודשים.
+            <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--cream-muted)', lineHeight: 1.7 }}>
+                מבוסס על מרווח ממוצע של {margin}% —
+                בתחום הנמוך של קטלוג VAZA. רוב המוצרים מגיעים ל-45–55%.
               </p>
             </div>
           </div>
         </motion.div>
       </div>
-
-      <div className="gold-line absolute bottom-0 inset-x-0" />
     </section>
+  )
+}
+
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+  display,
+}: {
+  label: string
+  value: number
+  min: number
+  max: number
+  onChange: (v: number) => void
+  display: string
+}) {
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1rem' }}>
+        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--cream)' }}>{label}</label>
+        <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--bronze)', letterSpacing: '-0.01em' }}>{display}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        style={{ width: '100%', accentColor: 'var(--bronze)' }}
+      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.4rem', fontSize: '0.62rem', color: 'var(--cream-muted)' }}>
+        <span>{min}</span>
+        <span>{max}</span>
+      </div>
+    </div>
   )
 }

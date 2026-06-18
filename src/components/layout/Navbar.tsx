@@ -3,137 +3,141 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { AnimatePresence, motion } from 'framer-motion'
 
-const navLinks = [
+const NAV = [
   { href: '/catalog', label: 'קטלוג' },
   { href: '/package-builder', label: 'בנה חבילה' },
-  { href: '/top-sellers', label: 'Top Sellers' },
   { href: '/about', label: 'אודות' },
   { href: '/contact', label: 'צור קשר' },
 ]
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const fn = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
   }, [])
 
   return (
     <header
-      className={cn(
-        'fixed top-0 inset-x-0 z-50 transition-all duration-500',
-        scrolled
-          ? 'bg-[#050505]/90 backdrop-blur-xl border-b border-[rgba(212,175,55,0.08)]'
-          : 'bg-transparent'
-      )}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        transition: 'background 0.4s, border-color 0.4s',
+        background: scrolled ? 'rgba(5,5,5,0.94)' : 'transparent',
+        borderBottom: scrolled ? '1px solid var(--border-subtle)' : '1px solid transparent',
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+      }}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
             <div
-              className="w-8 h-8 rounded flex items-center justify-center font-black text-sm"
               style={{
-                background: 'linear-gradient(135deg, #B8963E, #D4AF37, #F4D06F)',
+                width: '32px',
+                height: '32px',
+                background: 'var(--bronze)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: '0.9rem',
                 color: '#050505',
-                letterSpacing: '-0.02em',
+                letterSpacing: '-0.01em',
               }}
             >
               V
             </div>
-            <div className="flex flex-col leading-none">
-              <span
-                className="font-black text-base tracking-widest uppercase"
-                style={{ color: '#F5F0E8', letterSpacing: '0.15em' }}
-              >
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+              <span style={{ fontWeight: 900, fontSize: '0.9rem', letterSpacing: '0.18em', color: 'var(--cream)', textTransform: 'uppercase' }}>
                 VAZA
               </span>
-              <span
-                className="text-[9px] font-medium tracking-[0.3em] uppercase"
-                style={{ color: 'rgba(212,175,55,0.7)' }}
-              >
+              <span style={{ fontSize: '0.55rem', letterSpacing: '0.28em', color: 'var(--bronze-dim)', textTransform: 'uppercase', marginTop: '2px' }}>
                 Partner Hub
               </span>
             </div>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
+          <nav style={{ display: 'none', gap: '2.5rem' }} className="lg:flex">
+            {NAV.map((l) => (
               <Link
-                key={link.href}
-                href={link.href}
-                className="text-xs font-medium tracking-wider uppercase transition-colors duration-200"
-                style={{ color: 'rgba(245,240,232,0.6)', letterSpacing: '0.12em' }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37' }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(245,240,232,0.6)' }}
+                key={l.href}
+                href={l.href}
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: 'var(--cream-muted)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--bronze)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cream-muted)' }}
               >
-                {link.label}
+                {l.label}
               </Link>
             ))}
           </nav>
 
-          {/* CTA */}
-          <div className="hidden lg:flex items-center gap-4">
-            <Link
-              href="/admin"
-              className="text-xs font-medium tracking-wider uppercase transition-colors"
-              style={{ color: 'rgba(245,240,232,0.35)', letterSpacing: '0.1em' }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(212,175,55,0.7)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(245,240,232,0.35)' }}
-            >
-              ניהול
-            </Link>
-            <Link href="/catalog" className="btn-gold text-xs py-2.5 px-6">
+          {/* CTA desktop */}
+          <div style={{ display: 'none', alignItems: 'center', gap: '1rem' }} className="lg:flex">
+            <Link href="/catalog" className="btn-primary" style={{ padding: '0.55rem 1.4rem', fontSize: '0.72rem' }}>
               צפה בקטלוג
             </Link>
           </div>
 
-          {/* Mobile */}
+          {/* Mobile toggle */}
           <button
-            className="lg:hidden p-2 text-[rgba(245,240,232,0.6)]"
-            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden"
+            onClick={() => setOpen(!open)}
+            style={{ color: 'var(--cream-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem' }}
           >
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       <AnimatePresence>
-        {isOpen && (
+        {open && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden overflow-hidden"
-            style={{ background: 'rgba(5,5,5,0.98)', borderBottom: '1px solid rgba(212,175,55,0.1)' }}
+            style={{ overflow: 'hidden', background: 'rgba(5,5,5,0.98)', borderBottom: '1px solid var(--border-subtle)' }}
           >
-            <div className="px-6 py-6 space-y-4">
-              {navLinks.map((link) => (
+            <div style={{ padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {NAV.map((l) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block text-sm font-medium tracking-wider uppercase py-2"
-                  style={{ color: 'rgba(245,240,232,0.7)', letterSpacing: '0.1em' }}
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: 500,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--cream-dim)',
+                    textDecoration: 'none',
+                  }}
                 >
-                  {link.label}
+                  {l.label}
                 </Link>
               ))}
-              <div className="pt-2">
-                <Link href="/catalog" className="btn-gold w-full justify-center">
-                  צפה בקטלוג
-                </Link>
-              </div>
+              <Link href="/catalog" className="btn-primary" style={{ justifyContent: 'center', marginTop: '0.5rem' }}>
+                צפה בקטלוג
+              </Link>
             </div>
           </motion.div>
         )}
